@@ -204,4 +204,7 @@ public class JuegoBantumi {
     public void deserializa(String juegoSerializado) {
         // @TODO
     }
+    public void restartGame(){
+        this.inicializar(Turno.turnoJ1);
+    }
 }

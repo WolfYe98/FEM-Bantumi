@@ -1,6 +1,7 @@
 package es.upm.miw.bantumi;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -17,9 +19,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Locale;
 
+import es.upm.miw.bantumi.dialog_fragments.RestartGameDialogFragment;
 import es.upm.miw.bantumi.model.BantumiViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RestartGameDialogFragment.RestartGameDialogListener {
 
     protected final String LOG_TAG = "MiW";
     JuegoBantumi juegoBantumi;
@@ -107,13 +110,13 @@ public class MainActivity extends AppCompatActivity {
             viewHueco.setText(String.valueOf(valor));
         }
     }
-
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.opciones_menu, menu);
         return true;
     }
-
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
 //            case R.id.opcAjustes: // @todo Preferencias
@@ -126,7 +129,12 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.ok, null)
                         .show();
                 return true;
-
+            case R.id.opcReiniciarPartida:
+                this.showRestartDialog();
+                return true;
+            case R.id.opcAjustes:
+                this.showAjustes();
+                return true;
             // @TODO!!! resto opciones
 
             default:
@@ -138,7 +146,16 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-
+    private void showRestartDialog(){
+        Log.i(LOG_TAG,"Mostrando dialogo reiniciar");
+        DialogFragment dialogFragment = new RestartGameDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(),"RestartGameDialogFragment");
+    }
+    private void showAjustes(){
+        Log.i(LOG_TAG,"Abriendo configuracion");
+        Intent intent = new Intent(getApplicationContext(),ConfigurationActivity.class);
+        startActivity(intent);
+    }
     /**
      * Acción que se ejecuta al pulsar sobre cualquier hueco
      *
@@ -200,5 +217,15 @@ public class MainActivity extends AppCompatActivity {
 
         // terminar
         new FinalAlertDialog().show(getSupportFragmentManager(), "ALERT_DIALOG");
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        Log.i("MiW","Destroying main activity");
+    }
+
+    @Override
+    public void onAcceptClick(DialogFragment dialogFragment) {
+        this.juegoBantumi.restartGame();
     }
 }
