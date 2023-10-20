@@ -19,10 +19,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Locale;
 
-import es.upm.miw.bantumi.dialog_fragments.RestartGameDialogFragment;
+import es.upm.miw.bantumi.fragments.dialogs.RestartGameDialogFragment;
 import es.upm.miw.bantumi.model.BantumiViewModel;
 
-public class MainActivity extends AppCompatActivity implements RestartGameDialogFragment.RestartGameDialogListener {
+public class MainActivity extends AppCompatActivity {
 
     protected final String LOG_TAG = "MiW";
     JuegoBantumi juegoBantumi;
@@ -224,8 +224,7 @@ public class MainActivity extends AppCompatActivity implements RestartGameDialog
         Log.i("MiW","Destroying main activity");
     }
 
-    @Override
-    public void onAcceptClick(DialogFragment dialogFragment) {
+    public void onDialogAccept() {
         this.juegoBantumi.restartGame();
     }
 }

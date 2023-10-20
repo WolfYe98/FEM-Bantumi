@@ -14,7 +14,6 @@ public class FinalAlertDialog extends DialogFragment {
     @Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		final MainActivity main = (MainActivity) requireActivity();
-
         assert main != null;
         AlertDialog.Builder builder = new AlertDialog.Builder(main);
         builder
