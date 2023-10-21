@@ -1,11 +1,16 @@
 package es.upm.miw.bantumi.model;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import es.upm.miw.bantumi.JuegoBantumi;
 
@@ -64,5 +69,13 @@ public class BantumiViewModel extends ViewModel {
             throw new ArrayIndexOutOfBoundsException();
         }
         tablero.get(pos).setValue(v);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public String getTableroString(){
+        StringBuilder tableroString = new StringBuilder();
+        for (MutableLiveData<Integer> casilla:this.tablero) {
+            tableroString.append(casilla.getValue()).append(" ");
+        }
+        return tableroString.toString();
     }
 }

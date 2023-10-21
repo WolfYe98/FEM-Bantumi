@@ -1,6 +1,11 @@
 package es.upm.miw.bantumi;
 
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalDateTime;
 
 import es.upm.miw.bantumi.model.BantumiViewModel;
 
@@ -187,13 +192,20 @@ public class JuegoBantumi {
     }
 
     /**
-     * Devuelve una cadena que representa el estado completo del juego
+     * Devuelve una cadena que representa el estado completo del juego para el guardado
      *
      * @return juego serializado
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public String serializa() {
-        // @TODO
-        return null;
+        String endl = "\n";
+        StringBuilder game = new StringBuilder();
+        game.append("Date: ")
+                .append(LocalDateTime.now())
+                .append(endl)
+                .append(this.bantumiVM.getTableroString())
+                .append(endl);
+        return game.toString();
     }
 
     /**

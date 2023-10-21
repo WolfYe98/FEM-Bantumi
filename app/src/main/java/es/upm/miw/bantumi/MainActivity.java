@@ -2,6 +2,7 @@ package es.upm.miw.bantumi;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
@@ -17,7 +19,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 
 import es.upm.miw.bantumi.fragments.dialogs.RestartGameDialogFragment;
 import es.upm.miw.bantumi.model.BantumiViewModel;
@@ -25,10 +30,10 @@ import es.upm.miw.bantumi.model.BantumiViewModel;
 public class MainActivity extends AppCompatActivity {
 
     protected final String LOG_TAG = "MiW";
+    protected final String LOG_TAG_ERROR = "MiW-ERROR";
     JuegoBantumi juegoBantumi;
     BantumiViewModel bantumiVM;
     int numInicialSemillas;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.opciones_menu, menu);
         return true;
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -135,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.opcAjustes:
                 this.showAjustes();
                 return true;
+            case R.id.opcGuardarPartida:
+                this.guardarPartida();
+                return true;
             // @TODO!!! resto opciones
 
             default:
@@ -146,6 +155,24 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void guardarPartida() {
+        String partidaSerializada = this.juegoBantumi.serializa();
+        this.escribirPartidaEnFichero(partidaSerializada);
+
+    }
+    private void escribirPartidaEnFichero(String partidaSerializada){
+        try{
+            FileOutputStream fOut = openFileOutput(getString(R.string.savedGamesFileName),MODE_PRIVATE);
+            fOut.write(partidaSerializada.getBytes());
+            fOut.close();
+        } catch (IOException iex){
+            Log.e(LOG_TAG_ERROR, Objects.requireNonNull(iex.getMessage()));
+            iex.printStackTrace();
+        }
+    }
+
     private void showRestartDialog(){
         Log.i(LOG_TAG,"Mostrando dialogo reiniciar");
         DialogFragment dialogFragment = new RestartGameDialogFragment();

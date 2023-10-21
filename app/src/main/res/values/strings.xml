@@ -50,5 +50,6 @@
     <string name="restartMessage">¿Estás seguro de que quieres reiniciar la partida?</string>
     <string name="txtSaveConfiguration">Guardar</string>
     <string name="txtResetConfiguration">Reset</string>
+    <string name="savedGamesFileName">saved_games</string>
 
 </resources>
