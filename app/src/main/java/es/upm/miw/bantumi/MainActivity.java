@@ -13,18 +13,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Objects;
 
-import es.upm.miw.bantumi.fragments.dialogs.RestartGameDialogFragment;
+import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragment;
+import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragmentBuilder;
 import es.upm.miw.bantumi.model.BantumiViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -142,28 +146,73 @@ public class MainActivity extends AppCompatActivity {
                 this.showAjustes();
                 return true;
             case R.id.opcGuardarPartida:
-                this.guardarPartida();
+                this.showSaveGameDialog();
+                return true;
+            case R.id.opcRecuperarPartida:
+                this.restoreGame();
                 return true;
             // @TODO!!! resto opciones
 
             default:
-                Snackbar.make(
-                        findViewById(android.R.id.content),
-                        getString(R.string.txtSinImplementar),
-                        Snackbar.LENGTH_LONG
-                ).show();
+                this.showSnackBarWithMessageId(R.string.txtSinImplementar);
         }
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void guardarPartida() {
-        String partidaSerializada = this.juegoBantumi.serializa();
-        this.escribirPartidaEnFichero(partidaSerializada);
-
+    private void restoreGame() {
+        if(this.juegoBantumi.isGamePlayed()){
+            Log.i(LOG_TAG,"Mostrando dialogo de restaurar una partida");
+            this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.restartDialogTitle,R.string.restoreGameDialogMessage,this::restoreGameFromFile);
+        } else{
+            this.restoreGameFromFile();
+        }
     }
-    private void escribirPartidaEnFichero(String partidaSerializada){
+    private void restoreGameFromFile(){
         try{
+            Log.i(LOG_TAG,"Restaurando partida desde fichero");
+            FileInputStream fInput = openFileInput(getString(R.string.savedGamesFileName));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fInput));
+            String endl = "\n";
+            String line = reader.readLine();
+            StringBuilder builder = new StringBuilder();
+            builder.append(line)
+                    .append(endl);
+            while(line != null){
+                line = reader.readLine();
+                builder.append(line)
+                        .append(endl);
+            }
+            this.juegoBantumi.deserializa(builder.toString());
+            fInput.close();
+            this.showSnackBarWithMessageId(R.string.txtRestoredGame);
+        }catch (FileNotFoundException fEx){
+          this.showSnackBarWithMessageId(R.string.noSavedGameMessage);
+        } catch (IOException iex){
+            Log.e(LOG_TAG_ERROR, Objects.requireNonNull(iex.getMessage()));
+            iex.printStackTrace();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showSaveGameDialog(){
+        this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.saveGameDialogTitle,R.string.saveGameDialogMessage,this::saveGame);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void saveGame() {
+        Log.i(LOG_TAG,"Guardando la partida");
+        this.writeGameInFile(this.juegoBantumi.serializa());
+        this.showSnackBarWithMessageId(R.string.txtGameSaved);
+    }
+    private void showSnackBarWithMessageId(int id){
+        Snackbar.make(
+                findViewById(android.R.id.content),
+                getString(id),
+                Snackbar.LENGTH_LONG
+        ).show();
+    }
+    private void writeGameInFile(String partidaSerializada){
+        try{
+            Log.i(LOG_TAG,"Escribiendo la partida en el fichero");
             FileOutputStream fOut = openFileOutput(getString(R.string.savedGamesFileName),MODE_PRIVATE);
             fOut.write(partidaSerializada.getBytes());
             fOut.close();
@@ -175,8 +224,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void showRestartDialog(){
         Log.i(LOG_TAG,"Mostrando dialogo reiniciar");
-        DialogFragment dialogFragment = new RestartGameDialogFragment();
-        dialogFragment.show(getSupportFragmentManager(),"RestartGameDialogFragment");
+        this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.restartDialogTitle,R.string.restartDialogMessage,this::onRestartGameDialogAccept);
+    }
+    private void showCustomDialogWithTitleMessageAndAcceptAction(int idTitle, int idMessage, Runnable acceptAction){
+        CustomOnlyAcceptDialogFragmentBuilder builder = new CustomOnlyAcceptDialogFragment.Builder();
+        builder.setTitle(getString(idTitle))
+                .setMessage(getString(idMessage))
+                .setAcceptAction(((dialog, which) -> {
+                    acceptAction.run();
+                }))
+                .build()
+                .show(getSupportFragmentManager(),"RestartGameDialogFragment");
     }
     private void showAjustes(){
         Log.i(LOG_TAG,"Abriendo configuracion");
@@ -251,7 +309,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i("MiW","Destroying main activity");
     }
 
-    public void onDialogAccept() {
+    public void onRestartGameDialogAccept() {
+        Log.i(LOG_TAG,"Reiniciando la partida");
         this.juegoBantumi.restartGame();
+        this.showSnackBarWithMessageId(R.string.txtRestartedGame);
+        Log.i(LOG_TAG,"Partida reiniciada");
     }
 }
