@@ -59,5 +59,7 @@
     <string name="restoreGameDialogMessage">¿Deseas sobreescribir la partida actual con la partida guardada?</string>
     <string name="noSavedGameMessage">No hay ninguna partida guardada.</string>
     <string name="txtRestoredGame">Partida recuperada!</string>
+    <string name="prPlayerNameKey">player_name</string>
+    <string name="prPlayerNameEVTitle">Player name</string>
 
 </resources>

@@ -31,6 +31,11 @@ dependencies {
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
 
+    // Preferences
+    implementation "androidx.preference:preference:$rootProject.preferenceVersion"
+    // Room
+    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$rootProject.roomVersion"
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     // LiveData
