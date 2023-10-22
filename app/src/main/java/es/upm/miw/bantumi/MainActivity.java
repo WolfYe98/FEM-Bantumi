@@ -2,6 +2,7 @@ package es.upm.miw.bantumi;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -24,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.PrivateKey;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -33,24 +36,40 @@ import es.upm.miw.bantumi.model.BantumiViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    protected final String LOG_TAG = "MiW";
+    protected static final String LOG_TAG = "MiW";
     protected final String LOG_TAG_ERROR = "MiW-ERROR";
     JuegoBantumi juegoBantumi;
     BantumiViewModel bantumiVM;
     int numInicialSemillas;
+    SharedPreferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setPlayerName();
         // Instancia el ViewModel y el juego, y asigna observadores a los huecos
-        numInicialSemillas = getResources().getInteger(R.integer.intNumInicialSemillas);
+        numInicialSemillas = this.getInitialSeedsNumber();
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
         juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
         crearObservadores();
     }
-
+    private void setPlayerName(){
+        String playerName = this.getSettingPlayerNameOrDefault();
+        TextView tvPlayer1 = findViewById(R.id.tvPlayer1);
+        tvPlayer1.setText(playerName);
+    }
+    private String getSettingPlayerNameOrDefault(){
+        String playerName = preferences.getString(getString(R.string.prPlayerNameKey),getString(R.string.txtPlayer1));
+        return playerName.isEmpty()?getString(R.string.txtPlayer1):playerName;
+    }
+    private int getInitialSeedsNumber(){
+        int defaultNumber = getResources().getInteger(R.integer.intNumInicialSemillas);
+        String preferenceNumber = preferences.getString(getString(R.string.prInitialSeedNumberKey), Integer.toString(defaultNumber));
+        return Integer.parseInt(preferenceNumber);
+    }
     /**
+     *
      * Crea y subscribe los observadores asignados a las posiciones del tablero.
      * Si se modifica el contenido del tablero -> se actualiza la vista.
      */
@@ -308,7 +327,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Log.i("MiW","Destroying main activity");
     }
-
+    @Override
+    protected void onResume(){
+        super.onResume();
+        this.setPlayerName();
+    }
     public void onRestartGameDialogAccept() {
         Log.i(LOG_TAG,"Reiniciando la partida");
         this.juegoBantumi.restartGame();

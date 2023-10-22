@@ -61,5 +61,8 @@
     <string name="txtRestoredGame">Partida recuperada!</string>
     <string name="prPlayerNameKey">player_name</string>
     <string name="prPlayerNameEVTitle">Player name</string>
+    <string name="prInitialSeedNumberKey">initial_seed_number</string>
+    <string name="prInitialSeedNumberEVTitle">Semillas iniciales</string>
+    <string name="prSBSeedShouldBeNumberText">Las semillas iniciales deben ser un número.</string>
 
 </resources>
