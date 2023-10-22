@@ -20,12 +20,13 @@ public class GameResult {
     @ColumnInfo(name = "loser_name")
     private String loserName;
     @ColumnInfo(name="game_datetime")
-    private LocalDateTime gameDateTime;
+    private String gameDateTime;
     @ColumnInfo(name = "winner_seed_number")
     private Integer winnerSeedNumber;
     @ColumnInfo(name="loser_seed_number")
     private Integer loserSeedNumber;
-
+    @ColumnInfo(name = "is_tie")
+    private Boolean isTie;
     @NonNull
     public Integer getId() {
         return id;
@@ -51,12 +52,20 @@ public class GameResult {
         this.loserName = loserName;
     }
 
-    public LocalDateTime getDateTime() {
+    public String getGameDateTime() {
         return gameDateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.gameDateTime = dateTime;
+    public void setGameDateTime(String gameDateTime) {
+        this.gameDateTime = gameDateTime;
+    }
+
+    public Boolean getTie() {
+        return isTie;
+    }
+
+    public void setTie(Boolean tie) {
+        isTie = tie;
     }
 
     public Integer getWinnerSeedNumber() {
@@ -93,7 +102,7 @@ public class GameResult {
         }
 
         @Override
-        public GameResultBuilder setDateTime(LocalDateTime gameDate) {
+        public GameResultBuilder setDateTime(String gameDate) {
             this.result.gameDateTime = gameDate;
             return this;
         }
@@ -108,6 +117,17 @@ public class GameResult {
         public GameResultBuilder setLoserSeedNumber(Integer loserSeedNumber) {
             this.result.loserSeedNumber = loserSeedNumber;
             return this;
+        }
+
+        @Override
+        public GameResultBuilder setIsTie(Boolean isTie) {
+            this.result.isTie = isTie;
+            return this;
+        }
+
+        @Override
+        public GameResult build() {
+            return this.result;
         }
     }
 }

@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 public interface GameResultBuilder {
     GameResultBuilder setWinnerName(String winnerName);
     GameResultBuilder setLoserName(String loserName);
-    GameResultBuilder setDateTime(LocalDateTime gameDate);
+    GameResultBuilder setDateTime(String gameDate);
     GameResultBuilder setWinnerSeedNumber(Integer winnerSeedNumber);
     GameResultBuilder setLoserSeedNumber(Integer loserSeedNumber);
+    GameResultBuilder setIsTie(Boolean isTie);
+    GameResult build();
 }

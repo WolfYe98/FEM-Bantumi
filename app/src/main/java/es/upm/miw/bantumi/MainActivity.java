@@ -27,12 +27,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.PrivateKey;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Objects;
 
 import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragment;
 import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragmentBuilder;
 import es.upm.miw.bantumi.model.BantumiViewModel;
+import es.upm.miw.bantumi.model.game_result_model.GameResult;
+import es.upm.miw.bantumi.model.game_result_model.GameResultBuilder;
+import es.upm.miw.bantumi.model.game_result_model.GameResultViewModel;
+import es.upm.miw.bantumi.model.game_result_model.GameRoomDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     BantumiViewModel bantumiVM;
     int numInicialSemillas;
     SharedPreferences preferences;
+    GameResultViewModel gameResultViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
         juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
         crearObservadores();
+        this.gameResultViewModel = new ViewModelProvider(this).get(GameResultViewModel.class);
     }
     private void setPlayerName(){
         String playerName = this.getSettingPlayerNameOrDefault();
@@ -304,11 +311,18 @@ public class MainActivity extends AppCompatActivity {
      * El juego ha terminado. Volver a jugar?
      */
     private void finJuego() {
-        String texto = (juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
-                ? "Gana Jugador 1"
-                : "Gana Jugador 2";
+        boolean isTie = false;
+        String texto = "Gana ";
+        String winnerName =(juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
+                ? this.getSettingPlayerNameOrDefault()
+                : getString(R.string.txtPlayer2);
+        String loserName =  (juegoBantumi.getSemillas(6) < 6 * numInicialSemillas)
+                ? this.getSettingPlayerNameOrDefault()
+                : getString(R.string.txtPlayer2);
+        texto += winnerName;
         if (juegoBantumi.getSemillas(6) == 6 * numInicialSemillas) {
             texto = "¡¡¡ EMPATE !!!";
+            isTie = true;
         }
         Snackbar.make(
                 findViewById(android.R.id.content),
@@ -317,8 +331,17 @@ public class MainActivity extends AppCompatActivity {
         )
         .show();
 
-        // @TODO guardar puntuación
-
+        int winnerPos = winnerName.equals(this.getSettingPlayerNameOrDefault()) ? 6 : JuegoBantumi.NUM_POSICIONES-1;
+        int loserPos = winnerPos == 6 ? JuegoBantumi.NUM_POSICIONES-1:6;
+        GameResult.Builder builder = new GameResult.Builder();
+        GameResult result = builder.setWinnerName(winnerName)
+                .setLoserName(loserName)
+                .setDateTime(LocalDateTime.now().toString())
+                .setWinnerSeedNumber(this.juegoBantumi.getSemillas(winnerPos))
+                .setLoserSeedNumber(this.juegoBantumi.getSemillas(loserPos))
+                .setIsTie(isTie)
+                .build();
+        this.gameResultViewModel.insert(result);
         // terminar
         new FinalAlertDialog().show(getSupportFragmentManager(), "ALERT_DIALOG");
     }
