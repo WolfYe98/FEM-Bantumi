@@ -10,9 +10,9 @@ import androidx.fragment.app.DialogFragment;
 
 public class CustomOnlyAcceptDialogFragment extends DialogFragment {
     protected final String LOG_TAG = "MiW - Restart Dialog";
+    DialogInterface.OnClickListener listener;
     private String title;
     private String message;
-    DialogInterface.OnClickListener listener;
 
     @NonNull
     @Override

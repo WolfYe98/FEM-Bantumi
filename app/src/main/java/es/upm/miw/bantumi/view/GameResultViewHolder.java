@@ -25,6 +25,12 @@ public class GameResultViewHolder extends RecyclerView.ViewHolder {
         this.tvIsTie = itemView.findViewById(R.id.tvIsTie);
     }
 
+    static GameResultViewHolder create(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.game_result_recycler_view_item, parent, false);
+        return new GameResultViewHolder(view);
+    }
+
     public void bind(GameResult gameResult) {
         this.tvDate.setText(gameResult.getGameDateTime());
         this.tvWinnerName.setText(gameResult.getTie() ? "" : gameResult.getWinnerName());
@@ -32,11 +38,5 @@ public class GameResultViewHolder extends RecyclerView.ViewHolder {
         this.tvIsTie.setText(gameResult.getTie() ?
                 itemView.getResources().getString(R.string.txtYes) :
                 itemView.getResources().getString(R.string.txtNo));
-    }
-
-    static GameResultViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.game_result_recycler_view_item, parent, false);
-        return new GameResultViewHolder(view);
     }
 }

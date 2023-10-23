@@ -5,13 +5,16 @@
     <EditTextPreference
         app:key="@string/prPlayerNameKey"
         app:title="@string/prPlayerNameEVTitle"
-        app:useSimpleSummaryProvider="true"
-        />
+        app:useSimpleSummaryProvider="true" />
     <EditTextPreference
         android:defaultValue="4"
         android:key="@string/prInitialSeedNumberKey"
         android:singleLine="true"
         android:title="@string/prInitialSeedNumberEVTitle"
-        app:useSimpleSummaryProvider="true"
-        />
+        app:useSimpleSummaryProvider="true" />
+    <ListPreference
+        android:entries="@array/turn_entries"
+        android:entryValues="@array/turn_values"
+        android:key="@string/prFirstMovementKey"
+        android:title="@string/prFirstMovementText" />
 </PreferenceScreen>

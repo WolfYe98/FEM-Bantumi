@@ -71,5 +71,9 @@
     <string name="txtNo">No</string>
     <string name="txtYes">Si</string>
     <string name="txtBorrarTodo">Borrar todo</string>
+    <string name="prFirstMovementText">Primer movimiento</string>
+    <string name="prFirstMovementKey">listPreferences</string>
+    <string name="resetGameWithNewPreferences">Se ha modificado la partida con las nuevas preferencias.</string>
+    <string name="resetNextGameWithNewPreferences">Se aplicaran los cambios en la próxima partida.</string>
 
 </resources>

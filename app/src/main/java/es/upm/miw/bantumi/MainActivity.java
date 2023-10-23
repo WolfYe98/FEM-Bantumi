@@ -53,10 +53,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         setPlayerName();
+        JuegoBantumi.Turno turn = this.getFirstMovementTurnFromPreferences();
         // Instancia el ViewModel y el juego, y asigna observadores a los huecos
         numInicialSemillas = this.getInitialSeedsNumber();
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
-        juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
+        juegoBantumi = new JuegoBantumi(bantumiVM, turn, numInicialSemillas);
         crearObservadores();
         this.gameResultViewModel = new ViewModelProvider(this).get(GameResultViewModel.class);
     }
@@ -65,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
         String playerName = this.getSettingPlayerNameOrDefault();
         TextView tvPlayer1 = findViewById(R.id.tvPlayer1);
         tvPlayer1.setText(playerName);
+    }
+
+    private JuegoBantumi.Turno getFirstMovementTurnFromPreferences() {
+        String prTurn = preferences.getString(getString(R.string.prFirstMovementKey), JuegoBantumi.Turno.turnoJ1.name());
+        JuegoBantumi.Turno turn = JuegoBantumi.Turno.valueOf(prTurn);
+        return turn;
     }
 
     private String getSettingPlayerNameOrDefault() {
@@ -375,11 +382,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         this.setPlayerName();
+        if (!juegoBantumi.isGamePlayed()) {
+            this.restartGame();
+            this.showSnackBarWithMessageId(R.string.resetGameWithNewPreferences);
+        } else {
+            this.showSnackBarWithMessageId(R.string.resetNextGameWithNewPreferences);
+        }
+    }
+
+    private void restartGame() {
+        int numeroSemillas = this.getInitialSeedsNumber();
+        JuegoBantumi.Turno turn = this.getFirstMovementTurnFromPreferences();
+        this.juegoBantumi.restartGame(numeroSemillas, turn);
     }
 
     public void onRestartGameDialogAccept() {
         Log.i(LOG_TAG, "Reiniciando la partida");
-        this.juegoBantumi.restartGame();
+        this.restartGame();
         this.showSnackBarWithMessageId(R.string.txtRestartedGame);
         Log.i(LOG_TAG, "Partida reiniciada");
     }

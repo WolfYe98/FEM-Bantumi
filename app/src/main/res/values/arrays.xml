@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="turn_entries">
+        <item>@string/txtPlayer2</item>
+        <item>@string/txtPlayer1</item>
+    </string-array>
+
+    <string-array name="turn_values">
+        <item>turnoJ2</item>
+        <item>turnoJ1</item>
+    </string-array>
+</resources>

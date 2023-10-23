@@ -12,12 +12,9 @@ import java.util.concurrent.Executors;
 @Database(entities = {GameResult.class}, version = 1, exportSchema = false)
 public abstract class GameRoomDatabase extends RoomDatabase {
     public static final String DATABASE_NAME = "game_database";
-
-    public abstract GameResultDao gameResultDao();
-
-    private static volatile GameRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    private static volatile GameRoomDatabase INSTANCE;
 
     static GameRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
@@ -31,4 +28,6 @@ public abstract class GameRoomDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    public abstract GameResultDao gameResultDao();
 }

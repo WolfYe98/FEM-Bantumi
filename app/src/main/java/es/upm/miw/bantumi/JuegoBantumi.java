@@ -18,16 +18,9 @@ public class JuegoBantumi {
     // Posición 13: depósito jugador 2
 
     private final BantumiViewModel bantumiVM;
-
-    // Turno juego
-    public enum Turno {
-        turnoJ1, turnoJ2, Turno_TERMINADO
-    }
-
     // Número inicial de semillas
-    private final int numInicialSemillas;
+    private int numInicialSemillas;
     private boolean gamePlayed = false;
-
     /**
      * Constructor
      * <p>
@@ -231,11 +224,17 @@ public class JuegoBantumi {
         this.gamePlayed = Boolean.parseBoolean(gameStringArray[3]);
     }
 
-    public void restartGame() {
-        this.inicializar(Turno.turnoJ1);
+    public void restartGame(int initialSeedNumber, Turno turn) {
+        this.numInicialSemillas = initialSeedNumber;
+        this.inicializar(turn);
     }
 
     public boolean isGamePlayed() {
         return gamePlayed;
+    }
+
+    // Turno juego
+    public enum Turno {
+        turnoJ1, turnoJ2, Turno_TERMINADO
     }
 }
