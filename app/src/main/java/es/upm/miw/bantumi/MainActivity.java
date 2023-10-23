@@ -26,8 +26,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.PrivateKey;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -35,9 +35,7 @@ import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragment;
 import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragmentBuilder;
 import es.upm.miw.bantumi.model.BantumiViewModel;
 import es.upm.miw.bantumi.model.game_result_model.GameResult;
-import es.upm.miw.bantumi.model.game_result_model.GameResultBuilder;
 import es.upm.miw.bantumi.model.game_result_model.GameResultViewModel;
-import es.upm.miw.bantumi.model.game_result_model.GameRoomDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -177,12 +175,19 @@ public class MainActivity extends AppCompatActivity {
             case R.id.opcRecuperarPartida:
                 this.restoreGame();
                 return true;
-            // @TODO!!! resto opciones
+            case R.id.opcMejoresResultados:
+                this.openBestResults();
+                return true;
 
             default:
                 this.showSnackBarWithMessageId(R.string.txtSinImplementar);
         }
         return true;
+    }
+
+    private void openBestResults() {
+        Intent intent = new Intent(MainActivity.this, GameResultActivity.class);
+        startActivity(intent);
     }
 
     private void restoreGame() {
@@ -334,9 +339,10 @@ public class MainActivity extends AppCompatActivity {
         int winnerPos = winnerName.equals(this.getSettingPlayerNameOrDefault()) ? 6 : JuegoBantumi.NUM_POSICIONES-1;
         int loserPos = winnerPos == 6 ? JuegoBantumi.NUM_POSICIONES-1:6;
         GameResult.Builder builder = new GameResult.Builder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         GameResult result = builder.setWinnerName(winnerName)
                 .setLoserName(loserName)
-                .setDateTime(LocalDateTime.now().toString())
+                .setDateTime(LocalDateTime.now().format(formatter))
                 .setWinnerSeedNumber(this.juegoBantumi.getSemillas(winnerPos))
                 .setLoserSeedNumber(this.juegoBantumi.getSemillas(loserPos))
                 .setIsTie(isTie)

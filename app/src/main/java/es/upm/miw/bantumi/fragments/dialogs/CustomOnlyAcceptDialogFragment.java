@@ -21,7 +21,6 @@ public class CustomOnlyAcceptDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle bundle){
-        MainActivity main = (MainActivity) requireActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder
         .setTitle(this.title)

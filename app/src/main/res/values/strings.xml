@@ -64,5 +64,12 @@
     <string name="prInitialSeedNumberKey">initial_seed_number</string>
     <string name="prInitialSeedNumberEVTitle">Semillas iniciales</string>
     <string name="prSBSeedShouldBeNumberText">Las semillas iniciales deben ser un número.</string>
+    <string name="rvResultDateTitle">Fecha</string>
+    <string name="rvResultWinnerTitle">Ganador</string>
+    <string name="rvResultWinnerSeedNumberTitle">Semillas Ganador</string>
+    <string name="rvResultGameTieTitle">Empate?</string>
+    <string name="txtNo">No</string>
+    <string name="txtYes">Si</string>
+    <string name="txtBorrarTodo">Borrar todo</string>
 
 </resources>
