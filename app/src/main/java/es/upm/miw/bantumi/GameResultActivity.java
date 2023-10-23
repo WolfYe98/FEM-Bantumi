@@ -22,7 +22,7 @@ public class GameResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(MainActivity.LOG_TAG,"Getting best 10 results");
+        Log.i(MainActivity.LOG_TAG, "Getting best 10 results");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_result);
         final ActionBar actionBar = getSupportActionBar();
@@ -31,7 +31,7 @@ public class GameResultActivity extends AppCompatActivity {
         actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_revert);
         gameResultViewModel = new ViewModelProvider(this).get(GameResultViewModel.class);
         RecyclerView rv = findViewById(R.id.game_result_recycler_view);
-        final GameResultListAdapter gameResultListAdapter =new GameResultListAdapter(new GameResultListAdapter.GameResultDiff());
+        final GameResultListAdapter gameResultListAdapter = new GameResultListAdapter(new GameResultListAdapter.GameResultDiff());
         rv.setAdapter(gameResultListAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
         gameResultViewModel.getBestResults().observe(this, gameResultListAdapter::submitList);
@@ -40,17 +40,18 @@ public class GameResultActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.game_result_menu,menu);
+        getMenuInflater().inflate(R.menu.game_result_menu, menu);
         return true;
     }
+
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 this.finish();
                 return true;
             case R.id.opcBorrarTodo:
-                Log.i(MainActivity.LOG_TAG,"Deleting all results");
+                Log.i(MainActivity.LOG_TAG, "Deleting all results");
                 this.deleteAll();
                 return true;
             default:
@@ -58,12 +59,13 @@ public class GameResultActivity extends AppCompatActivity {
         }
         return true;
     }
-    public void deleteAll(){
+
+    public void deleteAll() {
         CustomOnlyAcceptDialogFragmentBuilder builder = new CustomOnlyAcceptDialogFragment.Builder();
         builder.setTitle("Delete all")
                 .setMessage("Delete all messages?")
                 .setAcceptAction(((dialog, which) -> this.gameResultViewModel.deleteAll()))
                 .build()
-                .show(getSupportFragmentManager(),"DeleteAllFragment");
+                .show(getSupportFragmentManager(), "DeleteAllFragment");
     }
 }

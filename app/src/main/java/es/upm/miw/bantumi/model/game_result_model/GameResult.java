@@ -4,10 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.ProvidedAutoMigrationSpec;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity(tableName = "GameResult")
 public class GameResult {
@@ -19,14 +15,15 @@ public class GameResult {
     private String winnerName;
     @ColumnInfo(name = "loser_name")
     private String loserName;
-    @ColumnInfo(name="game_datetime")
+    @ColumnInfo(name = "game_datetime")
     private String gameDateTime;
     @ColumnInfo(name = "winner_seed_number")
     private Integer winnerSeedNumber;
-    @ColumnInfo(name="loser_seed_number")
+    @ColumnInfo(name = "loser_seed_number")
     private Integer loserSeedNumber;
     @ColumnInfo(name = "is_tie")
     private Boolean isTie;
+
     @NonNull
     public Integer getId() {
         return id;
@@ -83,9 +80,11 @@ public class GameResult {
     public void setLoserSeedNumber(Integer loserSeedNumber) {
         this.loserSeedNumber = loserSeedNumber;
     }
-    public static class Builder implements GameResultBuilder{
+
+    public static class Builder implements GameResultBuilder {
         private final GameResult result;
-        public Builder(){
+
+        public Builder() {
             this.result = new GameResult();
         }
 

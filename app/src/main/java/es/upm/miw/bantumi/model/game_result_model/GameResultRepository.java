@@ -9,13 +9,15 @@ import java.util.List;
 public class GameResultRepository {
     private final GameResultDao gameResultDao;
     private final LiveData<List<GameResult>> bestResults;
-    GameResultRepository(Application application){
+
+    GameResultRepository(Application application) {
         GameRoomDatabase db = GameRoomDatabase.getDatabase(application);
         gameResultDao = db.gameResultDao();
         bestResults = this.gameResultDao.getBestTenResults();
     }
-    void insert(GameResult gameResult){
-        GameRoomDatabase.databaseWriteExecutor.execute(()->{
+
+    void insert(GameResult gameResult) {
+        GameRoomDatabase.databaseWriteExecutor.execute(() -> {
             this.gameResultDao.insert(gameResult);
         });
     }

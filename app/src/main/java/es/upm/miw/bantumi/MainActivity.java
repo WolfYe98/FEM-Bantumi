@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     int numInicialSemillas;
     SharedPreferences preferences;
     GameResultViewModel gameResultViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,22 +60,25 @@ public class MainActivity extends AppCompatActivity {
         crearObservadores();
         this.gameResultViewModel = new ViewModelProvider(this).get(GameResultViewModel.class);
     }
-    private void setPlayerName(){
+
+    private void setPlayerName() {
         String playerName = this.getSettingPlayerNameOrDefault();
         TextView tvPlayer1 = findViewById(R.id.tvPlayer1);
         tvPlayer1.setText(playerName);
     }
-    private String getSettingPlayerNameOrDefault(){
-        String playerName = preferences.getString(getString(R.string.prPlayerNameKey),getString(R.string.txtPlayer1));
-        return playerName.isEmpty()?getString(R.string.txtPlayer1):playerName;
+
+    private String getSettingPlayerNameOrDefault() {
+        String playerName = preferences.getString(getString(R.string.prPlayerNameKey), getString(R.string.txtPlayer1));
+        return playerName.isEmpty() ? getString(R.string.txtPlayer1) : playerName;
     }
-    private int getInitialSeedsNumber(){
+
+    private int getInitialSeedsNumber() {
         int defaultNumber = getResources().getInteger(R.integer.intNumInicialSemillas);
         String preferenceNumber = preferences.getString(getString(R.string.prInitialSeedNumberKey), Integer.toString(defaultNumber));
         return Integer.parseInt(preferenceNumber);
     }
+
     /**
-     *
      * Crea y subscribe los observadores asignados a las posiciones del tablero.
      * Si se modifica el contenido del tablero -> se actualiza la vista.
      */
@@ -131,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Muestra el valor <i>valor</i> en la posición <i>pos</i>
      *
-     * @param pos posición a actualizar
+     * @param pos   posición a actualizar
      * @param valor valor a mostrar
      */
     private void mostrarValor(int pos, int valor) {
@@ -143,12 +147,14 @@ public class MainActivity extends AppCompatActivity {
             viewHueco.setText(String.valueOf(valor));
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.opciones_menu, menu);
         return true;
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -191,16 +197,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restoreGame() {
-        if(this.juegoBantumi.isGamePlayed()){
-            Log.i(LOG_TAG,"Mostrando dialogo de restaurar una partida");
-            this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.restartDialogTitle,R.string.restoreGameDialogMessage,this::restoreGameFromFile);
-        } else{
+        if (this.juegoBantumi.isGamePlayed()) {
+            Log.i(LOG_TAG, "Mostrando dialogo de restaurar una partida");
+            this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.restartDialogTitle, R.string.restoreGameDialogMessage, this::restoreGameFromFile);
+        } else {
             this.restoreGameFromFile();
         }
     }
-    private void restoreGameFromFile(){
-        try{
-            Log.i(LOG_TAG,"Restaurando partida desde fichero");
+
+    private void restoreGameFromFile() {
+        try {
+            Log.i(LOG_TAG, "Restaurando partida desde fichero");
             FileInputStream fInput = openFileInput(getString(R.string.savedGamesFileName));
             BufferedReader reader = new BufferedReader(new InputStreamReader(fInput));
             String endl = "\n";
@@ -208,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder builder = new StringBuilder();
             builder.append(line)
                     .append(endl);
-            while(line != null){
+            while (line != null) {
                 line = reader.readLine();
                 builder.append(line)
                         .append(endl);
@@ -216,48 +223,52 @@ public class MainActivity extends AppCompatActivity {
             this.juegoBantumi.deserializa(builder.toString());
             fInput.close();
             this.showSnackBarWithMessageId(R.string.txtRestoredGame);
-        }catch (FileNotFoundException fEx){
-          this.showSnackBarWithMessageId(R.string.noSavedGameMessage);
-        } catch (IOException iex){
+        } catch (FileNotFoundException fEx) {
+            this.showSnackBarWithMessageId(R.string.noSavedGameMessage);
+        } catch (IOException iex) {
             Log.e(LOG_TAG_ERROR, Objects.requireNonNull(iex.getMessage()));
             iex.printStackTrace();
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void showSaveGameDialog(){
-        this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.saveGameDialogTitle,R.string.saveGameDialogMessage,this::saveGame);
+    private void showSaveGameDialog() {
+        this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.saveGameDialogTitle, R.string.saveGameDialogMessage, this::saveGame);
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void saveGame() {
-        Log.i(LOG_TAG,"Guardando la partida");
+        Log.i(LOG_TAG, "Guardando la partida");
         this.writeGameInFile(this.juegoBantumi.serializa());
         this.showSnackBarWithMessageId(R.string.txtGameSaved);
     }
-    private void showSnackBarWithMessageId(int id){
+
+    private void showSnackBarWithMessageId(int id) {
         Snackbar.make(
                 findViewById(android.R.id.content),
                 getString(id),
                 Snackbar.LENGTH_LONG
         ).show();
     }
-    private void writeGameInFile(String partidaSerializada){
-        try{
-            Log.i(LOG_TAG,"Escribiendo la partida en el fichero");
-            FileOutputStream fOut = openFileOutput(getString(R.string.savedGamesFileName),MODE_PRIVATE);
+
+    private void writeGameInFile(String partidaSerializada) {
+        try {
+            Log.i(LOG_TAG, "Escribiendo la partida en el fichero");
+            FileOutputStream fOut = openFileOutput(getString(R.string.savedGamesFileName), MODE_PRIVATE);
             fOut.write(partidaSerializada.getBytes());
             fOut.close();
-        } catch (IOException iex){
+        } catch (IOException iex) {
             Log.e(LOG_TAG_ERROR, Objects.requireNonNull(iex.getMessage()));
             iex.printStackTrace();
         }
     }
 
-    private void showRestartDialog(){
-        Log.i(LOG_TAG,"Mostrando dialogo reiniciar");
-        this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.restartDialogTitle,R.string.restartDialogMessage,this::onRestartGameDialogAccept);
+    private void showRestartDialog() {
+        Log.i(LOG_TAG, "Mostrando dialogo reiniciar");
+        this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.restartDialogTitle, R.string.restartDialogMessage, this::onRestartGameDialogAccept);
     }
-    private void showCustomDialogWithTitleMessageAndAcceptAction(int idTitle, int idMessage, Runnable acceptAction){
+
+    private void showCustomDialogWithTitleMessageAndAcceptAction(int idTitle, int idMessage, Runnable acceptAction) {
         CustomOnlyAcceptDialogFragmentBuilder builder = new CustomOnlyAcceptDialogFragment.Builder();
         builder.setTitle(getString(idTitle))
                 .setMessage(getString(idMessage))
@@ -265,13 +276,15 @@ public class MainActivity extends AppCompatActivity {
                     acceptAction.run();
                 }))
                 .build()
-                .show(getSupportFragmentManager(),"RestartGameDialogFragment");
+                .show(getSupportFragmentManager(), "RestartGameDialogFragment");
     }
-    private void showAjustes(){
-        Log.i(LOG_TAG,"Abriendo configuracion");
-        Intent intent = new Intent(getApplicationContext(),ConfigurationActivity.class);
+
+    private void showAjustes() {
+        Log.i(LOG_TAG, "Abriendo configuracion");
+        Intent intent = new Intent(getApplicationContext(), ConfigurationActivity.class);
         startActivity(intent);
     }
+
     /**
      * Acción que se ejecuta al pulsar sobre cualquier hueco
      *
@@ -318,10 +331,10 @@ public class MainActivity extends AppCompatActivity {
     private void finJuego() {
         boolean isTie = false;
         String texto = "Gana ";
-        String winnerName =(juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
+        String winnerName = (juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
                 ? this.getSettingPlayerNameOrDefault()
                 : getString(R.string.txtPlayer2);
-        String loserName =  (juegoBantumi.getSemillas(6) < 6 * numInicialSemillas)
+        String loserName = (juegoBantumi.getSemillas(6) < 6 * numInicialSemillas)
                 ? this.getSettingPlayerNameOrDefault()
                 : getString(R.string.txtPlayer2);
         texto += winnerName;
@@ -330,14 +343,14 @@ public class MainActivity extends AppCompatActivity {
             isTie = true;
         }
         Snackbar.make(
-                findViewById(android.R.id.content),
-                texto,
-                Snackbar.LENGTH_LONG
-        )
-        .show();
+                        findViewById(android.R.id.content),
+                        texto,
+                        Snackbar.LENGTH_LONG
+                )
+                .show();
 
-        int winnerPos = winnerName.equals(this.getSettingPlayerNameOrDefault()) ? 6 : JuegoBantumi.NUM_POSICIONES-1;
-        int loserPos = winnerPos == 6 ? JuegoBantumi.NUM_POSICIONES-1:6;
+        int winnerPos = winnerName.equals(this.getSettingPlayerNameOrDefault()) ? 6 : JuegoBantumi.NUM_POSICIONES - 1;
+        int loserPos = winnerPos == 6 ? JuegoBantumi.NUM_POSICIONES - 1 : 6;
         GameResult.Builder builder = new GameResult.Builder();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         GameResult result = builder.setWinnerName(winnerName)
@@ -351,20 +364,23 @@ public class MainActivity extends AppCompatActivity {
         // terminar
         new FinalAlertDialog().show(getSupportFragmentManager(), "ALERT_DIALOG");
     }
+
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
-        Log.i("MiW","Destroying main activity");
+        Log.i("MiW", "Destroying main activity");
     }
+
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         this.setPlayerName();
     }
+
     public void onRestartGameDialogAccept() {
-        Log.i(LOG_TAG,"Reiniciando la partida");
+        Log.i(LOG_TAG, "Reiniciando la partida");
         this.juegoBantumi.restartGame();
         this.showSnackBarWithMessageId(R.string.txtRestartedGame);
-        Log.i(LOG_TAG,"Partida reiniciada");
+        Log.i(LOG_TAG, "Partida reiniciada");
     }
 }

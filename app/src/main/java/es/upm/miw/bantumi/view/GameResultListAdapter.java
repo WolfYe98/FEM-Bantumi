@@ -21,9 +21,10 @@ public class GameResultListAdapter extends ListAdapter<GameResult, GameResultVie
 
     @Override
     public void onBindViewHolder(@NonNull GameResultViewHolder holder, int position) {
-        GameResult gameResult =getItem(position);
+        GameResult gameResult = getItem(position);
         holder.bind(gameResult);
     }
+
     public static class GameResultDiff extends DiffUtil.ItemCallback<GameResult> {
 
         @Override

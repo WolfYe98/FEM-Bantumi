@@ -9,16 +9,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import es.upm.miw.bantumi.JuegoBantumi;
 
 public class BantumiViewModel extends ViewModel {
 
-    private ArrayList<MutableLiveData<Integer>> tablero;
+    private final ArrayList<MutableLiveData<Integer>> tablero;
 
-    private MutableLiveData<JuegoBantumi.Turno> turno;
+    private final MutableLiveData<JuegoBantumi.Turno> turno;
 
     public BantumiViewModel() {
         turno = new MutableLiveData<>(JuegoBantumi.Turno.turnoJ1);
@@ -37,6 +35,7 @@ public class BantumiViewModel extends ViewModel {
 
     /**
      * Establece el valor para turno
+     *
      * @param turno valor
      */
     public void setTurno(JuegoBantumi.Turno turno) {
@@ -62,7 +61,7 @@ public class BantumiViewModel extends ViewModel {
      * Asigna el valor v a la posición pos del tablero
      *
      * @param pos índice
-     * @param v valor
+     * @param v   valor
      */
     public void setNumSemillas(int pos, int v) {
         if (pos < 0 || pos >= JuegoBantumi.NUM_POSICIONES) {
@@ -70,10 +69,11 @@ public class BantumiViewModel extends ViewModel {
         }
         tablero.get(pos).setValue(v);
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public String getTableroString(){
+    public String getTableroString() {
         StringBuilder tableroString = new StringBuilder();
-        for (MutableLiveData<Integer> casilla:this.tablero) {
+        for (MutableLiveData<Integer> casilla : this.tablero) {
             tableroString.append(casilla.getValue()).append(" ");
         }
         return tableroString.toString();

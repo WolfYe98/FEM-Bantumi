@@ -30,10 +30,10 @@ public class JuegoBantumi {
 
     /**
      * Constructor
-     *
+     * <p>
      * Inicializa el modelo sólo si éste está vacío
      *
-     * @param turno especifica el turno inicial <code>[Turno.turnoJ1 || Turno.turnoJ2]</code>
+     * @param turno              especifica el turno inicial <code>[Turno.turnoJ1 || Turno.turnoJ2]</code>
      * @param numInicialSemillas Número de semillas al inicio del juego
      */
     public JuegoBantumi(BantumiViewModel bantumiVM, Turno turno, int numInicialSemillas) {
@@ -55,7 +55,7 @@ public class JuegoBantumi {
     /**
      * Asigna el número de semillas a una posición
      *
-     * @param pos posición
+     * @param pos   posición
      * @param valor número de semillas
      */
     public void setSemillas(int pos, int valor) {
@@ -114,7 +114,7 @@ public class JuegoBantumi {
         // Si acaba en hueco vacío en propio campo -> recoger propio + contrario
         if (getSemillas(nextPos) == 1
                 && ((turnoActual() == Turno.turnoJ1 && nextPos < 6)
-                    || (turnoActual() == Turno.turnoJ2 && nextPos > 6 && nextPos < 13))
+                || (turnoActual() == Turno.turnoJ2 && nextPos > 6 && nextPos < 13))
         ) {
             int posContrario = 12 - nextPos;
             Log.i("MiW", "\trecoger: turno=" + turnoActual() + ", pos=" + nextPos + ", contrario=" + posContrario);
@@ -202,17 +202,16 @@ public class JuegoBantumi {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String serializa() {
         String endl = "\n";
-        StringBuilder game = new StringBuilder();
-        game.append("Date: ")
-                .append(LocalDateTime.now())
-                .append(endl)
-                .append(this.bantumiVM.getTableroString())
-                .append(endl)
-                .append(this.bantumiVM.getTurno().getValue())
-                .append(endl)
-                .append(this.gamePlayed)
-                .append(endl);
-        return game.toString();
+        String game = "Date: " +
+                LocalDateTime.now() +
+                endl +
+                this.bantumiVM.getTableroString() +
+                endl +
+                this.bantumiVM.getTurno().getValue() +
+                endl +
+                this.gamePlayed +
+                endl;
+        return game;
     }
 
     /**
@@ -225,13 +224,14 @@ public class JuegoBantumi {
         String tableroString = gameStringArray[1];
         Turno turno = Turno.valueOf(gameStringArray[2]);
         String[] casillas = tableroString.split(" ");
-        for(int i = 0; i < casillas.length; i++){
-            this.bantumiVM.setNumSemillas(i,Integer.parseInt(casillas[i]));
+        for (int i = 0; i < casillas.length; i++) {
+            this.bantumiVM.setNumSemillas(i, Integer.parseInt(casillas[i]));
         }
         this.bantumiVM.setTurno(turno);
         this.gamePlayed = Boolean.parseBoolean(gameStringArray[3]);
     }
-    public void restartGame(){
+
+    public void restartGame() {
         this.inicializar(Turno.turnoJ1);
     }
 
