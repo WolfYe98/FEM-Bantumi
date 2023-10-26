@@ -1,9 +1,6 @@
 package es.upm.miw.bantumi;
 
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +18,7 @@ public class JuegoBantumi {
     // Número inicial de semillas
     private int numInicialSemillas;
     private boolean gamePlayed = false;
+
     /**
      * Constructor
      * <p>
@@ -192,7 +190,6 @@ public class JuegoBantumi {
      *
      * @return juego serializado
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public String serializa() {
         String endl = "\n";
         String game = "Date: " +

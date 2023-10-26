@@ -6,6 +6,7 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -145,4 +146,20 @@
             android:textAlignment="center"
             android:textSize="24sp" />
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linearLayout"
+        tools:ignore="UnknownId">
+
+        <TextView
+            android:id="@+id/tvTimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/initialTimerValue"
+            android:textAlignment="center"
+            android:textSize="100sp" />
+    </RelativeLayout>
 </RelativeLayout>

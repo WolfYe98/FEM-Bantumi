@@ -10,9 +10,10 @@ import androidx.fragment.app.DialogFragment;
 
 public class CustomOnlyAcceptDialogFragment extends DialogFragment {
     protected final String LOG_TAG = "MiW - Restart Dialog";
-    DialogInterface.OnClickListener listener;
-    private String title;
-    private String message;
+    protected DialogInterface.OnClickListener acceptListener = null;
+    protected DialogInterface.OnClickListener cancelListener = null;
+    protected String title;
+    protected String message;
 
     @NonNull
     @Override
@@ -21,8 +22,8 @@ public class CustomOnlyAcceptDialogFragment extends DialogFragment {
         builder
                 .setTitle(this.title)
                 .setMessage(this.message)
-                .setPositiveButton(android.R.string.ok, this.listener)
-                .setNegativeButton(android.R.string.cancel, null);
+                .setPositiveButton(android.R.string.ok, this.acceptListener)
+                .setNegativeButton(android.R.string.cancel, cancelListener);
         return builder.create();
     }
 
@@ -47,7 +48,13 @@ public class CustomOnlyAcceptDialogFragment extends DialogFragment {
 
         @Override
         public CustomOnlyAcceptDialogFragmentBuilder setAcceptAction(DialogInterface.OnClickListener listener) {
-            this.dialog.listener = listener;
+            this.dialog.acceptListener = listener;
+            return this;
+        }
+
+        @Override
+        public CustomOnlyAcceptDialogFragmentBuilder setCancelAction(DialogInterface.OnClickListener listener) {
+            this.dialog.cancelListener = listener;
             return this;
         }
 

@@ -9,5 +9,7 @@ public interface CustomOnlyAcceptDialogFragmentBuilder {
 
     CustomOnlyAcceptDialogFragmentBuilder setAcceptAction(DialogInterface.OnClickListener listener);
 
+    CustomOnlyAcceptDialogFragmentBuilder setCancelAction(DialogInterface.OnClickListener listener);
+
     CustomOnlyAcceptDialogFragment build();
 }

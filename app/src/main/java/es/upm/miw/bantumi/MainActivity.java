@@ -3,7 +3,6 @@ package es.upm.miw.bantumi;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,10 +28,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragment;
-import es.upm.miw.bantumi.fragments.dialogs.CustomOnlyAcceptDialogFragmentBuilder;
+import es.upm.miw.bantumi.fragments.dialogs.StopTimerDialogFragment;
 import es.upm.miw.bantumi.model.BantumiViewModel;
+import es.upm.miw.bantumi.model.TimerViewModel;
 import es.upm.miw.bantumi.model.game_result_model.GameResult;
 import es.upm.miw.bantumi.model.game_result_model.GameResultViewModel;
 
@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     int numInicialSemillas;
     SharedPreferences preferences;
     GameResultViewModel gameResultViewModel;
+    TimerViewModel timerViewModel;
+    Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
         numInicialSemillas = this.getInitialSeedsNumber();
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
         juegoBantumi = new JuegoBantumi(bantumiVM, turn, numInicialSemillas);
-        crearObservadores();
         this.gameResultViewModel = new ViewModelProvider(this).get(GameResultViewModel.class);
+        this.timerViewModel = new TimerViewModel();
+        crearObservadores();
     }
 
     private void setPlayerName() {
@@ -70,8 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     private JuegoBantumi.Turno getFirstMovementTurnFromPreferences() {
         String prTurn = preferences.getString(getString(R.string.prFirstMovementKey), JuegoBantumi.Turno.turnoJ1.name());
-        JuegoBantumi.Turno turn = JuegoBantumi.Turno.valueOf(prTurn);
-        return turn;
+        return JuegoBantumi.Turno.valueOf(prTurn);
     }
 
     private String getSettingPlayerNameOrDefault() {
@@ -110,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+        this.timerViewModel.getTimerValue().observe(this, (timerValue) -> {
+            TextView tvTimer = findViewById(R.id.tvTimer);
+            tvTimer.setText(timerValue);
+        });
     }
 
     /**
@@ -162,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -238,12 +243,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void showSaveGameDialog() {
         this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.saveGameDialogTitle, R.string.saveGameDialogMessage, this::saveGame);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void saveGame() {
         Log.i(LOG_TAG, "Guardando la partida");
         this.writeGameInFile(this.juegoBantumi.serializa());
@@ -276,12 +279,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showCustomDialogWithTitleMessageAndAcceptAction(int idTitle, int idMessage, Runnable acceptAction) {
-        CustomOnlyAcceptDialogFragmentBuilder builder = new CustomOnlyAcceptDialogFragment.Builder();
+        StopTimerDialogFragment.Builder builder = new StopTimerDialogFragment.Builder();
         builder.setTitle(getString(idTitle))
                 .setMessage(getString(idMessage))
-                .setAcceptAction(((dialog, which) -> {
+                .setAcceptAction((dialog, which) -> {
                     acceptAction.run();
-                }))
+                })
+                .setCancelAction((dialog, which) -> {
+                    this.startTimer();
+                })
                 .build()
                 .show(getSupportFragmentManager(), "RestartGameDialogFragment");
     }
@@ -301,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
         String resourceName = getResources().getResourceEntryName(v.getId()); // pXY
         int num = Integer.parseInt(resourceName.substring(resourceName.length() - 2));
         Log.i(LOG_TAG, "huecoPulsado(" + resourceName + ") num=" + num);
+        this.startTimerOnFirstClick();
         switch (juegoBantumi.turnoActual()) {
             case turnoJ1:
                 juegoBantumi.jugar(num);
@@ -313,6 +320,23 @@ public class MainActivity extends AppCompatActivity {
         }
         if (juegoBantumi.juegoTerminado()) {
             finJuego();
+        }
+    }
+
+    public void startTimer() {
+        this.stopTimer();
+        this.timer = new Timer();
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                timerViewModel.addSecondToTimer();
+            }
+        }, 0, 1000);
+    }
+
+    private void startTimerOnFirstClick() {
+        if (!this.juegoBantumi.isGamePlayed()) {
+            this.startTimer();
         }
     }
 
@@ -336,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
      * El juego ha terminado. Volver a jugar?
      */
     private void finJuego() {
+        this.stopTimer();
         boolean isTie = false;
         String texto = "Gana ";
         String winnerName = (juegoBantumi.getSemillas(6) > 6 * numInicialSemillas)
@@ -372,25 +397,50 @@ public class MainActivity extends AppCompatActivity {
         new FinalAlertDialog().show(getSupportFragmentManager(), "ALERT_DIALOG");
     }
 
+    public void stopTimer() {
+        if (this.timer != null) {
+            this.timer.cancel();
+            this.timer.purge();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.stopTimer();
+        Log.i(LOG_TAG, "Paused");
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        this.stopTimer();
         Log.i("MiW", "Destroying main activity");
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onRestart() {
+        super.onRestart();
         this.setPlayerName();
         if (!juegoBantumi.isGamePlayed()) {
             this.restartGame();
             this.showSnackBarWithMessageId(R.string.resetGameWithNewPreferences);
         } else {
             this.showSnackBarWithMessageId(R.string.resetNextGameWithNewPreferences);
+            this.startTimer();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (juegoBantumi.isGamePlayed()) {
+            this.startTimer();
         }
     }
 
     private void restartGame() {
+        this.resetTimer();
         int numeroSemillas = this.getInitialSeedsNumber();
         JuegoBantumi.Turno turn = this.getFirstMovementTurnFromPreferences();
         this.juegoBantumi.restartGame(numeroSemillas, turn);
@@ -401,5 +451,10 @@ public class MainActivity extends AppCompatActivity {
         this.restartGame();
         this.showSnackBarWithMessageId(R.string.txtRestartedGame);
         Log.i(LOG_TAG, "Partida reiniciada");
+    }
+
+    public void resetTimer() {
+        this.stopTimer();
+        this.timerViewModel.setTimerToZero();
     }
 }
