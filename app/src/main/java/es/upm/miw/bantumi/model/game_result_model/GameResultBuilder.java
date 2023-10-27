@@ -12,6 +12,7 @@ public interface GameResultBuilder {
     GameResultBuilder setLoserSeedNumber(Integer loserSeedNumber);
 
     GameResultBuilder setIsTie(Boolean isTie);
+    GameResultBuilder setGameDuration(String duration);
 
     GameResult build();
 }

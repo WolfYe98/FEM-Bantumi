@@ -16,13 +16,14 @@ public class GameResultViewHolder extends RecyclerView.ViewHolder {
     TextView tvWinnerName;
     TextView tvWinnerSeeds;
     TextView tvIsTie;
-
+    TextView tvGameDuration;
     public GameResultViewHolder(@NonNull View itemView) {
         super(itemView);
         this.tvDate = itemView.findViewById(R.id.tvResultDate);
         this.tvWinnerName = itemView.findViewById(R.id.tvResultWinner);
         this.tvWinnerSeeds = itemView.findViewById(R.id.tvResultWinnerSeedNumber);
         this.tvIsTie = itemView.findViewById(R.id.tvIsTie);
+        this.tvGameDuration = itemView.findViewById(R.id.tvGameDuration);
     }
 
     static GameResultViewHolder create(ViewGroup parent) {
@@ -38,5 +39,6 @@ public class GameResultViewHolder extends RecyclerView.ViewHolder {
         this.tvIsTie.setText(gameResult.getTie() ?
                 itemView.getResources().getString(R.string.txtYes) :
                 itemView.getResources().getString(R.string.txtNo));
+        this.tvGameDuration.setText(gameResult.getGameDuration());
     }
 }

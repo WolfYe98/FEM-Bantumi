@@ -1,6 +1,9 @@
 package es.upm.miw.bantumi;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,18 +13,29 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
-public class ConfigurationActivity extends AppCompatActivity {
+public class ConfigurationActivity extends AppCompatActivity{
+    private boolean preferencesChanged = false;
+    SharedPreferences preferences;
+    SharedPreferences.OnSharedPreferenceChangeListener spChanged = (sharedPreferences, key) -> {
+        Log.i(MainActivity.LOG_TAG,"Preference "+key+" changed");
+        preferencesChanged = true;
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferencesChanged = false;
         setContentView(R.layout.activity_configuration);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.registerOnSharedPreferenceChangeListener(spChanged);
+
         final ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -38,6 +52,10 @@ public class ConfigurationActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            Intent replyIntent = new Intent();
+            if (preferencesChanged){
+                setResult(RESULT_OK, replyIntent);
+            }
             this.finish();
             return true;
         } else {

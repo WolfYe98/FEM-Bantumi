@@ -66,7 +66,7 @@
     <string name="prSBSeedShouldBeNumberText">Las semillas iniciales deben ser un número.</string>
     <string name="rvResultDateTitle">Fecha</string>
     <string name="rvResultWinnerTitle">Ganador</string>
-    <string name="rvResultWinnerSeedNumberTitle">Semillas Ganador</string>
+    <string name="rvResultWinnerSeedNumberTitle">Semillas (G)</string>
     <string name="rvResultGameTieTitle">Empate?</string>
     <string name="txtNo">No</string>
     <string name="txtYes">Si</string>
@@ -76,5 +76,6 @@
     <string name="resetGameWithNewPreferences">Se ha modificado la partida con las nuevas preferencias.</string>
     <string name="resetNextGameWithNewPreferences">Se aplicaran los cambios en la próxima partida.</string>
     <string name="initialTimerValue">00:00</string>
+    <string name="rvGameDurationTitle">Duración</string>
 
 </resources>

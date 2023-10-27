@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "GameResult")
 public class GameResult {
     @PrimaryKey(autoGenerate = true)
-    @NonNull
     @ColumnInfo(name = "id")
     private Integer id;
     @ColumnInfo(name = "winner_name")
@@ -23,6 +22,8 @@ public class GameResult {
     private Integer loserSeedNumber;
     @ColumnInfo(name = "is_tie")
     private Boolean isTie;
+    @ColumnInfo(name="game_duration")
+    private String gameDuration;
 
     @NonNull
     public Integer getId() {
@@ -81,6 +82,14 @@ public class GameResult {
         this.loserSeedNumber = loserSeedNumber;
     }
 
+    public String getGameDuration() {
+        return gameDuration;
+    }
+
+    public void setGameDuration(String gameDuration) {
+        this.gameDuration = gameDuration;
+    }
+
     public static class Builder implements GameResultBuilder {
         private final GameResult result;
 
@@ -121,6 +130,12 @@ public class GameResult {
         @Override
         public GameResultBuilder setIsTie(Boolean isTie) {
             this.result.isTie = isTie;
+            return this;
+        }
+
+        @Override
+        public GameResultBuilder setGameDuration(String duration) {
+            this.result.gameDuration = duration;
             return this;
         }
 

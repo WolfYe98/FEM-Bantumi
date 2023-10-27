@@ -38,7 +38,7 @@ import es.upm.miw.bantumi.model.game_result_model.GameResult;
 import es.upm.miw.bantumi.model.game_result_model.GameResultViewModel;
 
 public class MainActivity extends AppCompatActivity {
-
+    protected static final int CONFIGURATION_REQUEST_CODE = 1;
     protected static final String LOG_TAG = "MiW";
     protected final String LOG_TAG_ERROR = "MiW-ERROR";
     JuegoBantumi juegoBantumi;
@@ -286,7 +286,9 @@ public class MainActivity extends AppCompatActivity {
                     acceptAction.run();
                 })
                 .setCancelAction((dialog, which) -> {
-                    this.startTimer();
+                    if(this.juegoBantumi.isGamePlayed()){
+                        this.startTimer();
+                    }
                 })
                 .build()
                 .show(getSupportFragmentManager(), "RestartGameDialogFragment");
@@ -295,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
     private void showAjustes() {
         Log.i(LOG_TAG, "Abriendo configuracion");
         Intent intent = new Intent(getApplicationContext(), ConfigurationActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent,CONFIGURATION_REQUEST_CODE);
     }
 
     /**
@@ -391,6 +393,7 @@ public class MainActivity extends AppCompatActivity {
                 .setWinnerSeedNumber(this.juegoBantumi.getSemillas(winnerPos))
                 .setLoserSeedNumber(this.juegoBantumi.getSemillas(loserPos))
                 .setIsTie(isTie)
+                .setGameDuration(this.timerViewModel.getTimerValue().getValue())
                 .build();
         this.gameResultViewModel.insert(result);
         // terminar
@@ -412,25 +415,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        this.stopTimer();
-        Log.i("MiW", "Destroying main activity");
-    }
-
-    @Override
     protected void onRestart() {
         super.onRestart();
-        this.setPlayerName();
-        if (!juegoBantumi.isGamePlayed()) {
-            this.restartGame();
-            this.showSnackBarWithMessageId(R.string.resetGameWithNewPreferences);
-        } else {
-            this.showSnackBarWithMessageId(R.string.resetNextGameWithNewPreferences);
+        if(juegoBantumi.isGamePlayed()) {
             this.startTimer();
         }
     }
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CONFIGURATION_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (!juegoBantumi.isGamePlayed()) {
+                this.restartGame();
+                this.showSnackBarWithMessageId(R.string.resetGameWithNewPreferences);
+            } else {
+                this.showSnackBarWithMessageId(R.string.resetNextGameWithNewPreferences);
+                this.startTimer();
+            }
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -439,8 +442,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void restartGame() {
+    protected void restartGame() {
         this.resetTimer();
+        this.setPlayerName();
         int numeroSemillas = this.getInitialSeedsNumber();
         JuegoBantumi.Turno turn = this.getFirstMovementTurnFromPreferences();
         this.juegoBantumi.restartGame(numeroSemillas, turn);

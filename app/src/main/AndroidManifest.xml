@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_miw_launcher_rounded"
         android:supportsRtl="true"
         android:theme="@style/Theme.Bantumi"
+        android:enableOnBackInvokedCallback="true"
         tools:targetApi="s">
         <activity
             android:name=".ConfigurationActivity"
