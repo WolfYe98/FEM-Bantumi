@@ -17,6 +17,7 @@ public class GameResultViewHolder extends RecyclerView.ViewHolder {
     TextView tvWinnerSeeds;
     TextView tvIsTie;
     TextView tvGameDuration;
+
     public GameResultViewHolder(@NonNull View itemView) {
         super(itemView);
         this.tvDate = itemView.findViewById(R.id.tvResultDate);

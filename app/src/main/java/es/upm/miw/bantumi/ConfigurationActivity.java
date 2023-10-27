@@ -3,7 +3,6 @@ package es.upm.miw.bantumi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,13 +16,14 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
-public class ConfigurationActivity extends AppCompatActivity{
-    private boolean preferencesChanged = false;
+public class ConfigurationActivity extends AppCompatActivity {
     SharedPreferences preferences;
+    private boolean preferencesChanged = false;
     SharedPreferences.OnSharedPreferenceChangeListener spChanged = (sharedPreferences, key) -> {
-        Log.i(MainActivity.LOG_TAG,"Preference "+key+" changed");
+        Log.i(MainActivity.LOG_TAG, "Preference " + key + " changed");
         preferencesChanged = true;
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +53,7 @@ public class ConfigurationActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent replyIntent = new Intent();
-            if (preferencesChanged){
+            if (preferencesChanged) {
                 setResult(RESULT_OK, replyIntent);
             }
             this.finish();

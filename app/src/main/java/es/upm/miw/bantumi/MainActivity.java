@@ -171,10 +171,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if(juegoBantumi.isGamePlayed()) {
+        if (juegoBantumi.isGamePlayed()) {
             this.startTimer();
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -182,12 +183,14 @@ public class MainActivity extends AppCompatActivity {
             this.startTimer();
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.opciones_menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -317,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                     acceptAction.run();
                 })
                 .setCancelAction((dialog, which) -> {
-                    if(this.juegoBantumi.isGamePlayed()){
+                    if (this.juegoBantumi.isGamePlayed()) {
                         this.startTimer();
                     }
                 })
@@ -328,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
     private void showAjustes() {
         Log.i(LOG_TAG, "Abriendo configuracion");
         Intent intent = new Intent(getApplicationContext(), ConfigurationActivity.class);
-        startActivityForResult(intent,CONFIGURATION_REQUEST_CODE);
+        startActivityForResult(intent, CONFIGURATION_REQUEST_CODE);
     }
 
     /**

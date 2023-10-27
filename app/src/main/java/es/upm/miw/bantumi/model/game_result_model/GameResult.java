@@ -22,7 +22,7 @@ public class GameResult {
     private Integer loserSeedNumber;
     @ColumnInfo(name = "is_tie")
     private Boolean isTie;
-    @ColumnInfo(name="game_duration")
+    @ColumnInfo(name = "game_duration")
     private String gameDuration;
 
     @NonNull
