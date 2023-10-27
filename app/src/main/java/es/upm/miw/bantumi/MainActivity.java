@@ -162,18 +162,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        this.stopTimer();
+        Log.i(LOG_TAG, "Paused");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(juegoBantumi.isGamePlayed()) {
+            this.startTimer();
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (juegoBantumi.isGamePlayed()) {
+            this.startTimer();
+        }
+    }
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.opciones_menu, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.opcAjustes: // @todo Preferencias
-//                startActivity(new Intent(this, BantumiPrefs.class));
-//                return true;
             case R.id.opcAcercaDe:
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.aboutTitle)
@@ -201,6 +218,20 @@ public class MainActivity extends AppCompatActivity {
                 this.showSnackBarWithMessageId(R.string.txtSinImplementar);
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CONFIGURATION_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (!juegoBantumi.isGamePlayed()) {
+                this.restartGame();
+                this.showSnackBarWithMessageId(R.string.resetGameWithNewPreferences);
+            } else {
+                this.showSnackBarWithMessageId(R.string.resetNextGameWithNewPreferences);
+                this.startTimer();
+            }
+        }
     }
 
     private void openBestResults() {
@@ -404,41 +435,6 @@ public class MainActivity extends AppCompatActivity {
         if (this.timer != null) {
             this.timer.cancel();
             this.timer.purge();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.stopTimer();
-        Log.i(LOG_TAG, "Paused");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if(juegoBantumi.isGamePlayed()) {
-            this.startTimer();
-        }
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CONFIGURATION_REQUEST_CODE && resultCode == RESULT_OK) {
-            if (!juegoBantumi.isGamePlayed()) {
-                this.restartGame();
-                this.showSnackBarWithMessageId(R.string.resetGameWithNewPreferences);
-            } else {
-                this.showSnackBarWithMessageId(R.string.resetNextGameWithNewPreferences);
-                this.startTimer();
-            }
-        }
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (juegoBantumi.isGamePlayed()) {
-            this.startTimer();
         }
     }
 
