@@ -192,16 +192,14 @@ public class JuegoBantumi {
      */
     public String serializa() {
         String endl = "\n";
-        String game = "Date: " +
+        this.gamePlayed = false;
+        return "Date: " +
                 LocalDateTime.now() +
                 endl +
                 this.bantumiVM.getTableroString() +
                 endl +
                 this.bantumiVM.getTurno().getValue() +
-                endl +
-                this.gamePlayed +
                 endl;
-        return game;
     }
 
     /**
@@ -218,7 +216,7 @@ public class JuegoBantumi {
             this.bantumiVM.setNumSemillas(i, Integer.parseInt(casillas[i]));
         }
         this.bantumiVM.setTurno(turno);
-        this.gamePlayed = Boolean.parseBoolean(gameStringArray[3]);
+        this.gamePlayed = false;
     }
 
     public void restartGame(int initialSeedNumber, Turno turn) {
@@ -228,6 +226,10 @@ public class JuegoBantumi {
 
     public boolean isGamePlayed() {
         return gamePlayed;
+    }
+
+    public void setGamePlayed(boolean gamePlayed) {
+        this.gamePlayed = gamePlayed;
     }
 
     // Turno juego

@@ -34,4 +34,8 @@ public class TimerViewModel extends ViewModel {
     public void setTimerToZero() {
         this.timerValue.postValue(INITIAL_VALUE);
     }
+
+    public void setTimer(String newValue) {
+        this.timerValue.postValue(newValue);
+    }
 }

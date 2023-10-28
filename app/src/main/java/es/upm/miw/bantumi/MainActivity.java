@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import es.upm.miw.bantumi.fragments.dialogs.StopTimerDialogFragment;
 import es.upm.miw.bantumi.model.BantumiViewModel;
@@ -253,8 +255,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void restoreGameFromFile() {
         try {
+            this.stopTimer();
             Log.i(LOG_TAG, "Restaurando partida desde fichero");
             FileInputStream fInput = openFileInput(getString(R.string.savedGamesFileName));
+            String timerValue = getString(R.string.initialTimerValue);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fInput));
             String endl = "\n";
             String line = reader.readLine();
@@ -263,9 +267,13 @@ public class MainActivity extends AppCompatActivity {
                     .append(endl);
             while (line != null) {
                 line = reader.readLine();
+                if (checkIfLineIsTimer(line)) {
+                    timerValue = line;
+                }
                 builder.append(line)
                         .append(endl);
             }
+            this.timerViewModel.setTimer(timerValue);
             this.juegoBantumi.deserializa(builder.toString());
             fInput.close();
             this.showSnackBarWithMessageId(R.string.txtRestoredGame);
@@ -277,13 +285,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean checkIfLineIsTimer(String line) {
+        if (line != null) {
+            Pattern pattern = Pattern.compile("[0-5][0-9]:[0-5][0-9]");
+            Matcher matcher = pattern.matcher(line);
+            return matcher.find();
+        }
+        return false;
+    }
+
     private void showSaveGameDialog() {
         this.showCustomDialogWithTitleMessageAndAcceptAction(R.string.saveGameDialogTitle, R.string.saveGameDialogMessage, this::saveGame);
     }
 
     private void saveGame() {
         Log.i(LOG_TAG, "Guardando la partida");
-        this.writeGameInFile(this.juegoBantumi.serializa());
+        String currentGameSerialized = this.juegoBantumi.serializa();
+        currentGameSerialized += "\n";
+        currentGameSerialized += timerViewModel.getTimerValue().getValue();
+        this.writeGameInFile(currentGameSerialized);
         this.showSnackBarWithMessageId(R.string.txtGameSaved);
     }
 
@@ -344,6 +364,7 @@ public class MainActivity extends AppCompatActivity {
         int num = Integer.parseInt(resourceName.substring(resourceName.length() - 2));
         Log.i(LOG_TAG, "huecoPulsado(" + resourceName + ") num=" + num);
         this.startTimerOnFirstClick();
+        this.juegoBantumi.setGamePlayed(true);
         switch (juegoBantumi.turnoActual()) {
             case turnoJ1:
                 juegoBantumi.jugar(num);

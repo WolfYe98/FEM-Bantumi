@@ -62,8 +62,8 @@ public class GameResultActivity extends AppCompatActivity {
 
     public void deleteAll() {
         CustomOnlyAcceptDialogFragmentBuilder builder = new CustomOnlyAcceptDialogFragment.Builder();
-        builder.setTitle("Delete all")
-                .setMessage("Delete all messages?")
+        builder.setTitle(getString(R.string.deleteAllResultsTitle))
+                .setMessage(getString(R.string.deleteAllResults))
                 .setAcceptAction(((dialog, which) -> this.gameResultViewModel.deleteAll()))
                 .build()
                 .show(getSupportFragmentManager(), "DeleteAllFragment");
